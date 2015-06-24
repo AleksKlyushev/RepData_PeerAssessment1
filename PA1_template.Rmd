@@ -1,25 +1,114 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template"
+author: "Aleksandr Kliushev"
+date: "14.06.2015"
+output: html_document
 ---
+This research  about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up.
+
+Load library
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+1. The first step of research is a load, read and transform (to "tbl" format) data
+```{r}
+setwd("C:\\Users\\123\\Documents\\R\\coursera\\Reproduce Research\\PA1")
+act_data<-tbl_df(read.csv("activity.csv"))
+```
+Let's see data
+```{r}
+act_data
+```
+Group data for days
+```{r}
+act_day<-act_data%>%
+      group_by(date)%>%
+      summarise(step_sum=sum(steps,na.rm = T))
+act_day$date<-as.POSIXct(act_day$date)
+act_day
+```
+
+2. Mean and median number of steps
+2.a Plot a histogram number of steps
+```{r}
+hist(act_day$step_sum,breaks = 15,
+      main = "Histogram steps per day",xlab = "Steps count")  
+```  
+
+2.b Count mean and median 
+```{r}
+step_mean<-mean(act_day$step_sum)
+stem_med<-median(act_day$step_sum)
+```  
+The mean of step in day is `r format(step_mean)` and  
+median is `r stem_med`
+
+3. Plot daily activity
+```{r}
+g<-ggplot(data = act_data,aes(interval,steps))
+g+geom_line()
+```
+How we can see the 600 - 2000 interval is contains the maximum number of steps.
+
+4.Imputing missing values
+4.a Count the missing values
+```{r}
+mis_v<-count(act_data[is.na(act_data$steps),1])[[1]]
+```
+Count the missing values is `r mis_v`
+
+4.b Create new df, where missing value equal mean of 5 second interval
+```{r}
+act_int<-act_data%>%
+      group_by(interval)%>%
+      summarise(step_mean=mean(steps,na.rm = T))
+act_data_no_m<-(left_join(x=act_data,y = act_int,by =c("interval"="interval"))%>%
+      mutate(step_all = ifelse(is.na(steps),step_mean,steps)))[,
+                                                 c("date","interval","step_all")]
+```
+4.c Create hist without missing value
+```{r}
+act_day_no_m<-act_data_no_m%>%
+      group_by(date)%>%
+      summarise(step_sum=sum(step_all,na.rm = T))
+act_day_no_m$date<-as.POSIXct(act_day_no_m$date)
+hist(act_day_no_m$step_sum,breaks = 15,
+      main = "Histogram steps per day without NA",xlab = "Steps count")
+```
+
+4.d Count mean and median without NA
+```{r}
+step_mean_1<-mean(act_day_no_m$step_sum)
+stem_med_1<-median(act_day_no_m$step_sum)
+```  
+The mean of step in day is `r format(step_mean_1)` and  
+median is `r format(stem_med_1)`
+
+5.Differences in activity patterns between weekdays and weekends
+5.a Make a column with weekday/weekends values
+```{r}
+act_data_no_m$weekday<-
+      factor(weekdays(as.POSIXct(act_data_no_m$date),abbreviate = T),
+                levels = c("Ïí","Âò","Ñð","×ò","Ïò","Ñá","Âñ"),ordered=TRUE) 
+act_data_no_m$weekday_l<-ifelse(act_data_no_m$weekday=="Ïí"
+                                | act_data_no_m$weekday=="Âò"
+                                | act_data_no_m$weekday=="Ñð"
+                                | act_data_no_m$weekday=="×ò"
+                                | act_data_no_m$weekday=="Ïò"
+                                ,"Weekdays","Weekends")
+```
+5.b Make a df, group by interval an weekdays_l
+```{r}
+act_int_no_m<-act_data_no_m%>%
+      group_by(interval,weekday_l)%>%
+      summarise(step_mean=mean(step_all))
+```
+5.c Make a graf
+```{r}
+g<-ggplot(data = act_int_no_m,aes(interval,step_mean))
+g+geom_line()+facet_grid(. ~ weekday_l)
+```
 
 
-## Loading and preprocessing the data
-
-
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
