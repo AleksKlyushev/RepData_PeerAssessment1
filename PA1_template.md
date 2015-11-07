@@ -10,14 +10,18 @@ library(dplyr)
 ```
 
 ```
+## Warning: package 'dplyr' was built under R version 3.2.2
+```
+
+```
 ## 
 ## Attaching package: 'dplyr'
 ## 
-## The following object is masked from 'package:stats':
+## Следующие объекты скрыты от 'package:stats':
 ## 
-##     filter
+##     filter, lag
 ## 
-## The following objects are masked from 'package:base':
+## Следующие объекты скрыты от 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union
 ```
@@ -42,6 +46,7 @@ act_data
 ## Source: local data frame [17,568 x 3]
 ## 
 ##    steps       date interval
+##    (int)     (fctr)    (int)
 ## 1     NA 2012-10-01        0
 ## 2     NA 2012-10-01        5
 ## 3     NA 2012-10-01       10
@@ -68,6 +73,7 @@ act_day
 ## Source: local data frame [61 x 2]
 ## 
 ##          date step_sum
+##        (time)    (int)
 ## 1  2012-10-01        0
 ## 2  2012-10-02      126
 ## 3  2012-10-03    11352
@@ -183,7 +189,6 @@ g+geom_line()+facet_grid(. ~ weekday_l)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
-
 
 
 

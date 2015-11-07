@@ -2,7 +2,10 @@
 title: "PA1_template"
 author: "Aleksandr Kliushev"
 date: "14.06.2015"
-output: html_document
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
 ---
 This research  about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up.
 
@@ -110,5 +113,7 @@ act_int_no_m<-act_data_no_m%>%
 g<-ggplot(data = act_int_no_m,aes(interval,step_mean))
 g+geom_line()+facet_grid(. ~ weekday_l)
 ```
+
+
 
 
